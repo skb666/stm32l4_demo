@@ -53,5 +53,5 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files/>
- <EMStudioWindow activeProject="demo" fileDialogDefaultFilter="*.c" autoConnectTarget="J-Link" buildConfiguration="Release" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="/home/skb/Desktop/mcu/stm32l4_demo/Core/Src" debugSearchPath="" autoConnectCapabilities="3711"/>
+ <EMStudioWindow activeProject="demo" fileDialogDefaultFilter="*.c" autoConnectTarget="J-Link" buildConfiguration="Release" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="D:/work/stm32l4_demo/Core/Src" debugSearchPath="" autoConnectCapabilities="3199"/>
 </session>
