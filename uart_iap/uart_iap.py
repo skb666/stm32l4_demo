@@ -13,6 +13,7 @@ if __name__ == "__main__":
     import struct
     import time
     from mySerial import *
+    import crc
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "d:b:f:", ["device=", "baudrate=", "file="])
@@ -64,6 +65,7 @@ if __name__ == "__main__":
     time.sleep(0.1)
 
     has_err = False
+    all_data = b''
     with open(filename, "rb") as f_obj:
         while True:
             data = f_obj.read(readsize)
@@ -71,8 +73,10 @@ if __name__ == "__main__":
                 break
             data_len = len(data)
             if data_len != readsize:
+                print(f"padding: {8 - data_len % 8}")
                 data += b'\xff' * (8 - data_len % 8)
                 data_len = len(data)
+            all_data += data
             packed = b"\x55\xaa\x00" + struct.pack('<H', data_len) + data
             chars = sercomm.write_raw(packed)
             print(f"send {chars} chars")
@@ -83,7 +87,9 @@ if __name__ == "__main__":
                 break
 
     if not has_err:
-        packed = b"\x55\xaa\x02" + struct.pack('<H', 0)
+        crcval = crc.crc32_mpeg2(all_data)
+        print("crc: 0x%08x" % crcval)
+        packed = b"\x55\xaa\x02" + struct.pack('<H', 4) + struct.pack('<I', crcval)
         chars = sercomm.write_raw(packed)
         print(f"send {chars} chars")
 
