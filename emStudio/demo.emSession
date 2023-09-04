@@ -52,7 +52,7 @@
  </TraceWindow>
  <Watch1>
   <Watches active="1" update="Never">
-   <Watchpoint expression="HAL_RCC_ClockConfig" name="HAL_RCC_ClockConfig" radix="16" linenumber="168" filename="../Core/Src/main.c"/>
+   <Watchpoint expression="HAL_RCC_ClockConfig" name="HAL_RCC_ClockConfig" radix="16" linenumber="169" filename="../Core/Src/main.c"/>
   </Watches>
  </Watch1>
  <Watch2>
@@ -65,5 +65,5 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files/>
- <EMStudioWindow activeProject="demo" fileDialogDefaultFilter="*.c" autoConnectTarget="J-Link" buildConfiguration="Debug" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="D:/work/stm32l4_demo/Core/Src" debugSearchPath="" autoConnectCapabilities="3199"/>
+ <EMStudioWindow activeProject="demo" fileDialogDefaultFilter="*.c" autoConnectTarget="J-Link" buildConfiguration="Release" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="D:/work/stm32l4_demo/Core/Src" debugSearchPath="" autoConnectCapabilities="3199"/>
 </session>

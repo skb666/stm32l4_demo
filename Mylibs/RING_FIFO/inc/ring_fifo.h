@@ -30,6 +30,18 @@ typedef struct {
       .size = 0,                                     \
   }
 
+#define ring_def_static(Type, BufName, Size, Cover)  \
+  static Type __##BufName##_data[Size];              \
+  static RING_FIFO BufName = {                       \
+      .buffer = __##BufName##_data,                  \
+      .capacity = Size,                              \
+      .element_size = sizeof(__##BufName##_data[0]), \
+      .cover = Cover,                                \
+      .head = 0,                                     \
+      .tail = 0,                                     \
+      .size = 0,                                     \
+  }
+
 int8_t ring_push(RING_FIFO *ring, const void *element);
 int8_t ring_pop(RING_FIFO *ring, void *element);
 uint16_t ring_push_mult(RING_FIFO *ring, const void *elements, uint16_t num);

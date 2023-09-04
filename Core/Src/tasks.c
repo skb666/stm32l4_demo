@@ -4,10 +4,13 @@
 
 #include "key.h"
 #include "main.h"
-#include "update.h"
 #include "power.h"
+#include "ring_fifo.h"
+#include "update.h"
 
 #define TASKS_LIST_MAX 32
+
+extern void Error_Handler(void);
 
 typedef enum {
   TASK_TICK_25MS = 25,
@@ -17,20 +20,22 @@ typedef enum {
 } TASK_TICK;
 
 typedef struct {
+  uint8_t adjustable;
   uint32_t refer;
   uint32_t tick;
+  int32_t times;
   void (*run)(void);
 } TASK;
 
 typedef struct {
-  uint32_t num;
-  TASK list[TASKS_LIST_MAX];
   uint32_t tick_run;
-  uint32_t tick_sleep;
+  RING_FIFO *ring;
 } TASKS;
 
+ring_def_static(TASK, tasks_ring, TASKS_LIST_MAX, 0);
 static TASKS tasks;
 static uint32_t g_tick;
+static TIMESTAMP g_ts;
 
 static KEY_VALUE getKey(void) {
   if (LL_GPIO_IsInputPinSet(KEY_GPIO_Port, KEY_Pin) == 1) {
@@ -69,7 +74,20 @@ static void task_25ms(void) {
 }
 
 static void task_1s(void) {
+  TIMESTAMP ts;
+  uint32_t offset = 0;
+
   enter_stop2();
+
+  rtc_get(&ts);
+  //uart_printf("%u %u %u %u\n", g_ts.ts, g_ts.ss, ts.ts, ts.ss);
+
+  offset = rtc_calc(&g_ts, &ts);
+  memcpy(&g_ts, &ts, sizeof(TIMESTAMP));
+  if (offset > tasks.tick_run) {
+    tasks_adjust(offset - tasks.tick_run);
+    //uart_printf("adjust: %u\n", offset - tasks.tick_run);
+  }
 }
 
 static void task_5s(void) {
@@ -80,58 +98,98 @@ static void task_10s(void) {
   uart_printf("10s\n");
 }
 
-int8_t task_register(uint32_t tick, void (*run)(void)) {
-  if (tasks.num >= TASKS_LIST_MAX) {
+int8_t task_register(uint32_t tick, void (*run)(void), int32_t times, uint8_t adjustable) {
+  TASK task;
+
+  if (ring_size(tasks.ring) >= TASKS_LIST_MAX) {
     return -1;
   }
-  
-  tasks.list[tasks.num].refer = tick;
-  tasks.list[tasks.num].run = run;
-  tasks.list[tasks.num].tick = tick;
-  tasks.num += 1;
+
+  task.refer = tick;
+  task.run = run;
+  task.times = times;
+  task.adjustable = adjustable;
+  task.tick = tick;
+  if (ring_push(tasks.ring, &task)) {
+    Error_Handler();
+  }
 
   return 0;
 }
 
 void tasks_init(void) {
-  memset(&tasks, 0, sizeof(TASKS));
-
   g_tick = HAL_GetTick();
-  tasks.tick_run = 1000;
-  tasks.tick_sleep = 5000 - tasks.tick_run;
+  rtc_get(&g_ts);
 
-  task_register(TASK_TICK_25MS, task_25ms);
-  task_register(TASK_TICK_1S, task_1s);
-  task_register(TASK_TICK_5S, task_5s);
-  task_register(TASK_TICK_10S, task_10s);
+  memset(&tasks, 0, sizeof(TASKS));
+  tasks.ring = &tasks_ring;
+  tasks.tick_run = 1000;
+
+  task_register(TASK_TICK_25MS, task_25ms, -1, 0);
+  task_register(TASK_TICK_1S, task_1s, -1, 0);
+  task_register(TASK_TICK_5S, task_5s, 6, 1);
+  task_register(TASK_TICK_10S, task_10s, 3, 1);
 }
 
-void tasks_update(void) {
-  for (int i = 0; i < tasks.num; ++i) {
-    if (tasks.list[i].refer > tasks.tick_run) {
-      if (tasks.list[i].tick > tasks.tick_sleep) {
-        tasks.list[i].tick -= tasks.tick_sleep;
+void tasks_adjust(uint32_t offset) {
+  int i, task_num = 0;
+  TASK task;
+
+  task_num = ring_size(tasks.ring);
+
+  for (i = 0; i < task_num; ++i) {
+    if (ring_pop(tasks.ring, &task)) {
+      Error_Handler();
+    }
+    if (task.adjustable) {
+      if (task.tick > offset) {
+        task.tick -= offset;
       } else {
-        tasks.list[i].tick = 0;
+        task.tick = 0;
       }
+    }
+    if (ring_push(tasks.ring, &task)) {
+      Error_Handler();
     }
   }
 }
 
 void tasks_poll(void) {
-  if (HAL_GetTick() - g_tick < 1) {
+  uint32_t tick_diff = 0;
+  int i, task_num = 0;
+  TASK task;
+
+  tick_diff = HAL_GetTick() - g_tick;
+  if (tick_diff < 1) {
     return;
   }
 
   g_tick = HAL_GetTick();
+  task_num = ring_size(tasks.ring);
 
-  for (int i = 0; i < tasks.num; ++i) {
-    if (tasks.list[i].tick > 0) {
-      tasks.list[i].tick -= 1;
+  for (i = 0; i < task_num; ++i) {
+    if (ring_pop(tasks.ring, &task)) {
+      Error_Handler();
+    }
+
+    if (task.tick > 0) {
+      task.tick -= tick_diff;
+      if (ring_push(tasks.ring, &task)) {
+        Error_Handler();
+      }
       continue;
     }
 
-    tasks.list[i].tick = tasks.list[i].refer;
-    tasks.list[i].run();
+    task.tick = task.refer;
+    task.run();
+    if (task.times > 0) {
+      task.times -= 1;
+    }
+
+    if (task.times) {
+      if (ring_push(tasks.ring, &task)) {
+        Error_Handler();
+      }
+    }
   }
 }

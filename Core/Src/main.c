@@ -100,11 +100,12 @@ int main(void)
   /* USER CODE BEGIN 2 */
   uart_config();
   boot_param_check_upgrade();
-  tasks_init();
-  frame_parse_register(FRAME_TYPE_DEBUG, print_frame);
   LL_IWDG_ReloadCounter(IWDG);
   LL_GPIO_SetOutputPin(LED_GPIO_Port, LED_Pin);
   rtc_wake_init();
+  tasks_init();
+  frame_parse_register(FRAME_TYPE_DEBUG, print_frame);
+  LL_IWDG_ReloadCounter(IWDG);
   /* USER CODE END 2 */
 
   /* Infinite loop */

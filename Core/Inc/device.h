@@ -41,6 +41,7 @@ void print_frame(frame_parse_t *frame);
 
 #define uart_printf(fmt, args...)                        \
   do {                                                   \
+    uart_tx_poll();                                      \
     sprintf((char *)print_buf, fmt, ##args);             \
     uart_write((uint8_t *)print_buf, strlen(print_buf)); \
     uart_tx_poll();                                      \

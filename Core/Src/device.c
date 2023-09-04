@@ -30,8 +30,8 @@ char _RAM2 print_buf[64];
 
 static void _RAM2 (*func_list[FUNC_LIST_MAX])(frame_parse_t *);
 
-static ring_def(uint8_t _RAM2, uart_tx_ring, UART_TX_RING_SIZE, 1);
-static ring_def(uint8_t _RAM2, uart_rx_ring, UART_RX_RING_SIZE, 1);
+ring_def_static(uint8_t _RAM2, uart_tx_ring, UART_TX_RING_SIZE, 1);
+ring_def_static(uint8_t _RAM2, uart_rx_ring, UART_RX_RING_SIZE, 1);
 static uint8_t uart_dmatx_buf[UART_DMATX_BUF_SIZE];
 static uint8_t uart_dmarx_buf[UART_DMARX_BUF_SIZE];
 

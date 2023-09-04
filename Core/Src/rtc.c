@@ -33,6 +33,8 @@ void MX_RTC_Init(void)
   /* USER CODE END RTC_Init 0 */
 
   LL_RTC_InitTypeDef RTC_InitStruct = {0};
+  LL_RTC_TimeTypeDef RTC_TimeStruct = {0};
+  LL_RTC_DateTypeDef RTC_DateStruct = {0};
 
   RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
@@ -59,9 +61,23 @@ void MX_RTC_Init(void)
   /** Initialize RTC and set the Time and Date
   */
   RTC_InitStruct.HourFormat = LL_RTC_HOURFORMAT_24HOUR;
-  RTC_InitStruct.AsynchPrescaler = 127;
-  RTC_InitStruct.SynchPrescaler = 255;
+  RTC_InitStruct.AsynchPrescaler = 15;
+  RTC_InitStruct.SynchPrescaler = 2047;
   LL_RTC_Init(RTC, &RTC_InitStruct);
+
+  /** Initialize RTC and set the Time and Date
+  */
+  RTC_TimeStruct.Hours = 0;
+  RTC_TimeStruct.Minutes = 0;
+  RTC_TimeStruct.Seconds = 0;
+
+  LL_RTC_TIME_Init(RTC, LL_RTC_FORMAT_BIN, &RTC_TimeStruct);
+  RTC_DateStruct.WeekDay = LL_RTC_WEEKDAY_MONDAY;
+  RTC_DateStruct.Month = LL_RTC_MONTH_JANUARY;
+  RTC_DateStruct.Day = 1;
+  RTC_DateStruct.Year = 0;
+
+  LL_RTC_DATE_Init(RTC, LL_RTC_FORMAT_BIN, &RTC_DateStruct);
 
   /** Initialize RTC and set the Time and Date
   */
