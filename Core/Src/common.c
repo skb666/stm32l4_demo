@@ -6,6 +6,10 @@
 
 static uint32_t s_irq_count = 0;
 
+void reset_global_irq(void) {
+  s_irq_count = 0;
+}
+
 void disable_global_irq(void) {
   __disable_irq();
   s_irq_count++;

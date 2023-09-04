@@ -30,6 +30,7 @@
 #include "device.h"
 #include "update.h"
 #include "tasks.h"
+#include "power.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -102,6 +103,8 @@ int main(void)
   tasks_init();
   frame_parse_register(FRAME_TYPE_DEBUG, print_frame);
   LL_IWDG_ReloadCounter(IWDG);
+  LL_GPIO_SetOutputPin(LED_GPIO_Port, LED_Pin);
+  rtc_wake_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */

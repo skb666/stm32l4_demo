@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 
+void reset_global_irq(void);
 void disable_global_irq(void);
 void enable_global_irq(void);
 

@@ -60,6 +60,7 @@
       <file file_name="../Core/Src/iwdg.c" />
       <file file_name="../Core/Src/main.c" />
       <file file_name="../Core/Src/onchip_flash.c" />
+      <file file_name="../Core/Src/power.c" />
       <file file_name="../Core/Src/rtc.c" />
       <file file_name="../Core/Src/stm32l4xx_hal_msp.c" />
       <file file_name="../Core/Src/stm32l4xx_it.c" />

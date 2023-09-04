@@ -43,6 +43,7 @@ Core/Src/device.c \
 Core/Src/update.c \
 Core/Src/tasks.c \
 Core/Src/common.c \
+Core/Src/power.c \
 Core/Src/main.c \
 Core/Src/gpio.c \
 Core/Src/iwdg.c \

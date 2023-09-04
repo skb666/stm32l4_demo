@@ -208,7 +208,11 @@ void RTC_WKUP_IRQHandler(void)
 
   /* USER CODE END RTC_WKUP_IRQn 0 */
   /* USER CODE BEGIN RTC_WKUP_IRQn 1 */
-
+  if(LL_RTC_IsActiveFlag_WUT(RTC)) {   
+    LL_RTC_ClearFlag_WUT(RTC);
+    LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_20);  
+    LL_PWR_ClearFlag_WU();
+  }
   /* USER CODE END RTC_WKUP_IRQn 1 */
 }
 
