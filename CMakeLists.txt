@@ -2,58 +2,19 @@ cmake_minimum_required(VERSION 3.10)
 
 project(stm32l4_demo LANGUAGES C CXX)
 
-# 更详细的编译信息
-# set(CMAKE_VERBOSE_MAKEFILE on)
-
-# 选择编译版本（可以通过 vscode 指定）
-set(CMAKE_BUILD_TYPE Release)
-# set(CMAKE_BUILD_TYPE Debug)
-
-set(TOOLCHAINS_PATH "")
-set(TOOLCHAINS_PREFIX "arm-none-eabi-")
-
-# 交叉编译器（可以通过 vscode 指定）
-set(CMAKE_C_COMPILER "${TOOLCHAINS_PATH}${TOOLCHAINS_PREFIX}gcc")
-set(CMAKE_CXX_COMPILER "${TOOLCHAINS_PATH}${TOOLCHAINS_PREFIX}g++")
-
-# 生成目标的存放目录
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/output)
-# 默认存放静态库的文件夹位置
-# set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/output/archive)
-# 默认存放动态库的文件夹位置
-# set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/output/library)
-
-set(CPU "-mcpu=cortex-m4")
-set(FPU "-mfpu=fpv4-sp-d16")
-set(FLOAT-ABI "-mfloat-abi=hard")
-set(MCU "${CPU} -mthumb ${FPU} ${FLOAT-ABI}")
+MESSAGE(STATUS "Using toolchain file: ${CMAKE_TOOLCHAIN_FILE}.")
 MESSAGE(STATUS "MCU: " ${MCU})
+MESSAGE(STATUS "LDSCRIPT: " ${LDSCRIPT})
+MESSAGE(STATUS "ASM_SOURCES: " ${ASM_SOURCES})
+MESSAGE(STATUS "MAP_FILE: " ${MAP_FILE})
 
 # 添加编译参数
 add_compile_options(-Wall -fdata-sections -ffunction-sections -Os)
 add_link_options(-Wall -fdata-sections -ffunction-sections -Os)
 
-set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_C_STANDARD 11)
-set(CMAKE_C_FLAGS "${MCU}")
-set(CMAKE_C_FLAGS_DEBUG "-g -gdwarf-2 -D DEBUG")
-set(CMAKE_C_FLAGS_RELEASE "")
-
-# 如果CMAKE_CXX_STANDARD_REQUIRED设置为ON则必须使用CMAKE_CXX_STANDARD指定的版本
-# 如果CMAKE_CXX_STANDARD_REQUIRED设置为OFF则CMAKE_CXX_STANDARD指定版本的为首选版本如果没有会使用上一版本
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "${MCU}")
-set(CMAKE_CXX_FLAGS_DEBUG "-g -gdwarf-2 -D DEBUG")
-set(CMAKE_CXX_FLAGS_RELEASE "")
-
 # 递归调用子文件的 CMakeLists.txt
 # add_subdirectory(lib)
 
-set(LDSCRIPT "${PROJECT_SOURCE_DIR}/STM32L431RCTx_FLASH.ld")
-set(MAP_FILE "${PROJECT_SOURCE_DIR}/output/${PROJECT_NAME}.map")
-
-set(ASM_SOURCES "${PROJECT_SOURCE_DIR}/startup_stm32l431xx.s")
 set_property(SOURCE ${ASM_SOURCES} PROPERTY LANGUAGE C)
 set_source_files_properties(${ASM_SOURCES} PROPERTIES COMPILE_FLAGS "-x assembler-with-cpp")
 
