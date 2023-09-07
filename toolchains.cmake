@@ -1,3 +1,6 @@
+set(CMAKE_SYSTEM_NAME Generic)
+set(CMAKE_SYSTEM_PROCESSOR ARM)
+
 # 更详细的编译信息
 # set(CMAKE_VERBOSE_MAKEFILE on)
 
