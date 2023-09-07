@@ -1,18 +1,17 @@
 <!DOCTYPE CrossStudio_Project_File>
 <solution Name="demo" target="8" version="2">
-  <configuration Name="Common" linker_output_format="bin" />
+  <configuration
+    Name="Common"
+    gcc_optimization_level="Level 2 for size"
+    linker_output_format="bin" />
   <configuration
     Name="Debug"
     c_preprocessor_definitions="DEBUG"
-    gcc_debugging_level="Level 3"
-    gcc_omit_frame_pointer="Yes"
-    gcc_optimization_level="None" />
+    gcc_debugging_level="Level 3" />
   <configuration
     Name="Release"
     c_preprocessor_definitions="NDEBUG"
-    gcc_debugging_level="Level 2"
-    gcc_omit_frame_pointer="Yes"
-    gcc_optimization_level="Level 2 for size" />
+    gcc_debugging_level="Level 2" />
   <project Name="demo">
     <configuration
       LIBRARY_IO_TYPE="RTT"
@@ -51,9 +50,9 @@
       speed="50000"
       target_reset_script="Reset();"
       target_trace_initialize_script="EnableTrace(&quot;$(TraceInterfaceType)&quot;)" />
-    <configuration Name="Release" gcc_optimization_level="Level 2 for size" />
     <folder Name="Core">
       <file file_name="../Core/Src/common.c" />
+      <file file_name="../Core/Src/crc.c" />
       <file file_name="../Core/Src/device.c" />
       <file file_name="../Core/Src/dma.c" />
       <file file_name="../Core/Src/gpio.c" />
@@ -72,6 +71,8 @@
     <folder Name="Drivers">
       <file file_name="../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.c" />
       <file file_name="../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c" />
+      <file file_name="../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_crc.c" />
+      <file file_name="../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_crc_ex.c" />
       <file file_name="../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma.c" />
       <file file_name="../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma_ex.c" />
       <file file_name="../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c" />
