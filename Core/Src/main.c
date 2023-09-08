@@ -32,6 +32,7 @@
 #include "update.h"
 #include "tasks.h"
 #include "power.h"
+#include "common.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -104,7 +105,7 @@ int main(void)
   boot_param_check_upgrade();
   LL_IWDG_ReloadCounter(IWDG);
   LL_GPIO_SetOutputPin(LED_GPIO_Port, LED_Pin);
-  rtc_wake_init();
+  //rtc_wake_init();
   tasks_init();
   frame_parse_register(FRAME_TYPE_DEBUG, print_frame);
   LL_IWDG_ReloadCounter(IWDG);
@@ -185,8 +186,16 @@ void SystemClock_Config(void)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
+  uint32_t pc, lr, sp;
   __disable_irq();
+  __ASM volatile("MOV %0, pc"
+                 : "=r"(pc));
+  __ASM volatile("MOV %0, lr"
+                 : "=r"(lr));
+  __ASM volatile("MOV %0, sp"
+                 : "=r"(sp));
+  stack_backtrace(pc, lr, sp);
+  /* User can add his own implementation to report the HAL error return state */
   while (1)
   {
   }

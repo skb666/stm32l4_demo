@@ -10,8 +10,6 @@
 
 #define TASKS_LIST_MAX 32
 
-extern void Error_Handler(void);
-
 typedef enum {
   TASK_TICK_25MS = 25,
   TASK_TICK_1S = 1000,
@@ -60,13 +58,14 @@ static void task_25ms(void) {
     } break;
     case KE_RELEASE: {
       printf("[KEY]: RELEASE\n");
-      reboot_for_update();
+      Error_Handler();
     } break;
     case KE_LONG_PRESS: {
       printf("[KEY]: LONG_PRESS\n");
     } break;
     case KE_LONG_RELEASE: {
       printf("[KEY]: LONG_RELEASE\n");
+      reboot_for_update();
     } break;
     default: {
     } break;
@@ -77,7 +76,7 @@ static void task_1s(void) {
   TIMESTAMP ts;
   uint32_t offset = 0;
 
-  enter_stop2();
+  //enter_stop2();
 
   rtc_get(&ts);
   //uart_printf("%u %u %u %u\n", g_ts.ts, g_ts.ss, ts.ts, ts.ss);
@@ -88,6 +87,8 @@ static void task_1s(void) {
     tasks_adjust(offset - tasks.tick_run);
     //uart_printf("adjust: %u\n", offset - tasks.tick_run);
   }
+
+  LL_IWDG_ReloadCounter(IWDG);
 }
 
 static void task_5s(void) {

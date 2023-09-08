@@ -22,6 +22,7 @@
 #include "stm32l4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "common.h"
 #include "device.h"
 /* USER CODE END Includes */
 
@@ -85,7 +86,15 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
   /* USER CODE BEGIN HardFault_IRQn 0 */
-
+  uint32_t pc, lr, sp;
+  __disable_irq();
+  __ASM volatile("MOV %0, pc"
+                 : "=r"(pc));
+  __ASM volatile("MOV %0, lr"
+                 : "=r"(lr));
+  __ASM volatile("MOV %0, sp"
+                 : "=r"(sp));
+  stack_backtrace(pc, lr, sp);
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
   {
